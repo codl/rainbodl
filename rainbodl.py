@@ -1,9 +1,9 @@
 import tweepy
 import yaml
 import os
-from pgmagick import Image, CompositeOperator, Color, ColorHSL, Geometry
 import random
-from ctypes import cast, POINTER
+from PIL import Image, ImageColor
+import tempfile
 
 CONF_FILE = os.path.expanduser('~/.rainbodl')
 
@@ -39,16 +39,18 @@ def auth_dance(conf):
         print("Something went awry. Try again soon.")
         exit(2)
 
-def make_profile_picture(conf):
-    image = Image(os.path.expanduser(conf["image"]))
+def make_profile_picture(conf, filename):
+    im = Image.open(os.path.expanduser(conf["image"]))
+    im = im.convert(mode="RGBA")
 
-    size = Geometry(image.columns(), image.rows())
-    color = "hsl(%s,255,255)" % (random.randint(0, 255),)
-    color = "green"
-    background = Image(size, Color)
+    size = im.size
+    color = ImageColor.getrgb("hsl(%s,100%%,45%%)" % (random.randint(0, 360),))
 
-    background.composite(image, 0, 0, CompositeOperator.OverCompositeOp)
-    background.write("/tmp/bah.png")
+    background = Image.new("RGBA", size, color)
+
+    final = Image.alpha_composite(background, im)
+
+    final.save(filename)
 
 if __name__ == "__main__":
     conf = get_conf()
@@ -59,8 +61,14 @@ if __name__ == "__main__":
     api = tweepy.API(auth)
 
 
+    handle, filename = tempfile.mkstemp(suffix='.png')
+
+    make_profile_picture(conf, filename)
+
     try:
-        api.update_status("this is a test")
+        api.update_profile_image(filename)
     except Exception as e:
         print(dir(e.response.content))
+
+    os.unlink(filename)
 
