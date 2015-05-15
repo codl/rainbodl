@@ -1,3 +1,3 @@
-pyyaml
-tweepy
-pillow
+pillow>=2.8.1
+pyyaml>=3.11
+tweepy>=3.3.0
