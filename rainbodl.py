@@ -111,7 +111,7 @@ if __name__ == "__main__":
     conf_file = os.path.expanduser(args.config)
 
     try:
-        conf = expect_conf("twitter", {'consumer_key', 'consumer_secret'})
+        conf = expect_conf("twitter", {'access_token', 'access_token_secret'})
     except ConfNotValid:
         conf = auth_dance()
     auth = tweepy.OAuthHandler(conf['consumer_key'], conf['consumer_secret'])
