@@ -101,10 +101,25 @@ def rainbodl(api):
 
     os.unlink(filename)
 
+def post_image(api):
+    try:
+        conf = expect_conf("post_image", {"directory", "message"})
+    except ConfNotValid:
+        print("Please fill in the location of the image directory in %s" % (conf_file,), file=sys.stderr)
+        exit(1)
+
+    files = os.listdir(conf["directory"])
+    filename = conf["directory"] + os.sep + random.choice(files)
+
+    if(conf["message"]):
+        api.update_with_media(filename, status=conf["message"]);
+    else:
+        api.update_with_media(filename);
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', help="set the config file path", default="~/.rainbodl")
-    parser.add_argument('command', choices={'rainbodl'})
+    parser.add_argument('command', choices={'rainbodl', 'post-image'})
     args = parser.parse_args()
 
     global conf_file
@@ -120,3 +135,5 @@ if __name__ == "__main__":
 
     if args.command == 'rainbodl':
         rainbodl(api)
+    if args.command == 'post-image':
+        post_image(api)
