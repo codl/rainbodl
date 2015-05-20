@@ -1,6 +1,7 @@
 import argparse
 import os
 import random
+import stat
 import sys
 import tempfile
 import tweepy
@@ -34,7 +35,7 @@ def set_conf(module, conf):
 
 def auth_dance():
     try:
-        conf = expect_conf("twitter", {"consumer_key", "consumer_secret"})
+        conf = expect_conf("twitter", {"consumer_key": None, "consumer_secret": None})
     except ConfNotValid:
         print("Please fill in your API key and secret in %s" % (conf_file,), file=sys.stderr)
         exit(1)
@@ -52,7 +53,7 @@ def auth_dance():
         print("Something went awry. Try again soon.")
         exit(2)
 
-def expect_conf(module, keys):
+def expect_conf(module, values):
     conf = get_conf()
 
     valid = True
@@ -60,10 +61,13 @@ def expect_conf(module, keys):
         valid = False
         conf[module] = dict()
 
-    for key in keys:
+    for key in values:
         if key not in conf[module] or conf[module][key] == "FILL ME IN":
-            valid = False
-            conf[module][key] = "FILL ME IN"
+            if values[key] != None:
+                conf[module][key] = values[key]
+            else:
+                valid = False
+                conf[module][key] = "FILL ME IN"
 
     if not valid:
         set_conf(module, conf[module])
@@ -76,14 +80,18 @@ def rgb_tuple_to_hex(color):
 
 def rainbodl(api):
     try:
-        conf = expect_conf("rainbodl", {"image"})
+        conf = expect_conf("rainbodl", {"path": None, "change_profile_color": True})
     except ConfNotValid:
-        print("Please fill in the location of the image in %s" % (conf_file,), file=sys.stderr)
+        print("Please fill in the location of the image(s) in %s" % (conf_file,), file=sys.stderr)
         exit(1)
+
+    sourcefile = conf['path']
+    if(stat.S_ISDIR(os.stat(sourcefile).st_mode)):
+        sourcefile += os.sep + random.choice(os.listdir(sourcefile))
 
     _, filename = tempfile.mkstemp(suffix='.png')
 
-    im = Image.open(os.path.expanduser(conf["image"]))
+    im = Image.open(os.path.expanduser(sourcefile))
     im = im.convert(mode="RGBA")
 
     size = im.size
@@ -97,13 +105,14 @@ def rainbodl(api):
 
     api.update_profile_image(filename)
 
-    api.update_profile(profile_link_color=rgb_tuple_to_hex(color))
+    if conf['change_profile_color']:
+        api.update_profile(profile_link_color=rgb_tuple_to_hex(color))
 
     os.unlink(filename)
 
 def post_image(api):
     try:
-        conf = expect_conf("post_image", {"directory", "message"})
+        conf = expect_conf("post_image", {"directory": None, "message": False})
     except ConfNotValid:
         print("Please fill in the location of the image directory in %s" % (conf_file,), file=sys.stderr)
         exit(1)
@@ -116,6 +125,15 @@ def post_image(api):
     else:
         api.update_with_media(filename);
 
+def change_name(api):
+    try:
+        conf = expect_conf("post_image", {"prefix": "", "suffix": "", "filename": None})
+    except ConfNotValid:
+        print("Please fill the configuration in %s" % (conf_file,), file=sys.stderr)
+        exit(1)
+
+    pass
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', help="set the config file path", default="~/.rainbodl")
@@ -126,7 +144,7 @@ if __name__ == "__main__":
     conf_file = os.path.expanduser(args.config)
 
     try:
-        conf = expect_conf("twitter", {'access_token', 'access_token_secret'})
+        conf = expect_conf("twitter", {'access_token': None, 'access_token_secret': None})
     except ConfNotValid:
         conf = auth_dance()
     auth = tweepy.OAuthHandler(conf['consumer_key'], conf['consumer_secret'])
