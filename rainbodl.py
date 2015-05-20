@@ -85,13 +85,13 @@ def rainbodl(api):
         print("Please fill in the location of the image(s) in %s" % (conf_file,), file=sys.stderr)
         exit(1)
 
-    sourcefile = conf['path']
+    sourcefile = os.path.expanduser(conf['path'])
     if(stat.S_ISDIR(os.stat(sourcefile).st_mode)):
         sourcefile += os.sep + random.choice(os.listdir(sourcefile))
 
     _, filename = tempfile.mkstemp(suffix='.png')
 
-    im = Image.open(os.path.expanduser(sourcefile))
+    im = Image.open(sourcefile)
     im = im.convert(mode="RGBA")
 
     size = im.size
