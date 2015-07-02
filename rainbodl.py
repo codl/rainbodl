@@ -142,7 +142,7 @@ def post_status(api):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', help="set the config file path", default="~/.rainbodl")
-    parser.add_argument('command', choices={'rainbodl', 'post-image', 'post-status'})
+    parser.add_argument('command', choices={'auth', 'rainbodl', 'post-image', 'post-status'})
     args = parser.parse_args()
 
     global conf_file
