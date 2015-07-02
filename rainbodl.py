@@ -125,15 +125,6 @@ def post_image(api):
     else:
         api.update_with_media(filename);
 
-def change_name(api):
-    try:
-        conf = expect_conf("post_image", {"prefix": "", "suffix": "", "filename": None})
-    except ConfNotValid:
-        print("Please fill the configuration in %s" % (conf_file,), file=sys.stderr)
-        exit(1)
-
-    pass
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', help="set the config file path", default="~/.rainbodl")
