@@ -29,7 +29,7 @@ def set_conf(module, conf):
             orig_conf[module] = conf
             f.seek(0)
             f.truncate()
-            yaml.dump(orig_conf, f, default_flow_style=False)
+            yaml.dump(orig_conf, f, default_flow_style=False, default_style='"')
     except Exception as e:
         print(e)
 
@@ -125,10 +125,24 @@ def post_image(api):
     else:
         api.update_with_media(filename);
 
+def post_status(api):
+    try:
+        conf = expect_conf("post_status", {"path": None, "separator": "\n"})
+    except ConfNotValid:
+        print("Please fill in the location of the image directory in %s" % (conf_file,), file=sys.stderr)
+        exit(1)
+
+    with open(conf['path'], 'r') as f:
+        statuses = f.read().split(conf['separator'])
+
+    status = random.choice(statuses)
+
+    api.update_status(status=status)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', help="set the config file path", default="~/.rainbodl")
-    parser.add_argument('command', choices={'rainbodl', 'post-image'})
+    parser.add_argument('command', choices={'rainbodl', 'post-image', 'post-status'})
     args = parser.parse_args()
 
     global conf_file
@@ -146,3 +160,5 @@ if __name__ == "__main__":
         rainbodl(api)
     if args.command == 'post-image':
         post_image(api)
+    if args.command == 'post-status':
+        post_status(api)
