@@ -95,9 +95,11 @@ def rainbodl(api):
     im = im.convert(mode="RGBA")
 
     size = im.size
-    color = ImageColor.getrgb("hsl(%s,100%%,45%%)" % (random.randint(0, 360),))
+    hue = random.randint(0, 360);
+    avcolor = ImageColor.getrgb("hsl(%s,100%%,70%%)" % (hue,))
+    linkcolor = ImageColor.getrgb("hsl(%s,100%%,40%%)" % (hue,))
 
-    background = Image.new("RGBA", size, color)
+    background = Image.new("RGBA", size, avcolor)
 
     final = Image.alpha_composite(background, im)
 
@@ -106,7 +108,7 @@ def rainbodl(api):
     api.update_profile_image(filename)
 
     if conf['change_profile_color']:
-        api.update_profile(profile_link_color=rgb_tuple_to_hex(color))
+        api.update_profile(profile_link_color=rgb_tuple_to_hex(linkcolor))
 
     os.unlink(filename)
 
