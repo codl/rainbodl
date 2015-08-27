@@ -114,7 +114,7 @@ def rainbodl(api):
 
 def post_image(api):
     try:
-        conf = expect_conf("post_image", {"directory": None, "message": False})
+        conf = expect_conf("post_image", {"directory": None, "message": ""})
     except ConfNotValid:
         print("Please fill in the location of the image directory in %s" % (conf_file,), file=sys.stderr)
         exit(1)
@@ -122,10 +122,12 @@ def post_image(api):
     files = os.listdir(conf["directory"])
     filename = conf["directory"] + os.sep + random.choice(files)
 
-    if(conf["message"]):
-        api.update_with_media(filename, status=conf["message"]);
-    else:
-        api.update_with_media(filename);
+    try:
+        media = api.media_upload(filename);
+        api.update_status(media_ids=[media.media_id,], status=conf["message"]);
+    except tweepy.TweepError as e:
+        print(e.with_traceback)
+        exit(1)
 
 def post_status(api):
     try:
