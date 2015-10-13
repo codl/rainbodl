@@ -8,6 +8,8 @@ import tweepy
 import yaml
 from PIL import Image, ImageColor
 
+import ffz
+
 
 class ConfNotValid(Exception):
     pass
@@ -143,10 +145,13 @@ def post_status(api):
 
     api.update_status(status=status)
 
+def post_ffz(api):
+    pass
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', help="set the config file path", default="~/.rainbodl")
-    parser.add_argument('command', choices={'auth', 'rainbodl', 'post-image', 'post-status'})
+    parser.add_argument('command', choices={'auth', 'rainbodl', 'post-image', 'post-status', 'post-ffz'})
     args = parser.parse_args()
 
     global conf_file
@@ -166,3 +171,5 @@ if __name__ == "__main__":
         post_image(api)
     if args.command == 'post-status':
         post_status(api)
+    if args.command == 'post-ffz':
+        ffz.tweet(api)
