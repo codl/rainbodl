@@ -145,9 +145,6 @@ def post_status(api):
 
     api.update_status(status=status)
 
-def post_ffz(api):
-    pass
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', help="set the config file path", default="~/.rainbodl")
