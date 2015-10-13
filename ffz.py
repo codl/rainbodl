@@ -36,7 +36,7 @@ def make_pic(ffz):
     del draw
 
     # get the emote
-    req = requests.get(ffz["url"]);
+    req = requests.get(ffz["url"], headers=HEADERS);
     emote = Image.open(BytesIO(req.content))
 
     # paste it on
