@@ -6,12 +6,15 @@ from io import BytesIO
 from tempfile import mkstemp
 import os
 
-MAX_EMOTE_ID = 60000
 FFZ_API = 'https://api.frankerfacez.com/'
+FFZ_EMOTE_URL = 'http://www.frankerfacez.com/emoticons/{}'
+
 USER_AGENT = "rainbodl (https://github.com/codl/rainbodl)"
 HEADERS = {'User-Agent': USER_AGENT}
-FFZ_EMOTE_URL = 'http://www.frankerfacez.com/emoticons/{}'
-BG_COLOURS = ["#f2f2f2", "#19191f"]
+
+BG_COLOURS = ("#f2f2f2", "#19191f")
+
+IMAGE_SIZE = (262, 136)
 
 def get_random_ffz():
     r = requests.get(FFZ_API + 'v1/emoticons', headers=HEADERS)
@@ -30,7 +33,7 @@ def get_random_ffz():
 
 def make_pic(ffz):
     # set up background
-    im = Image.new("RGBA", (262 * ffz['multiplier'], 136* ffz['multiplier']), BG_COLOURS[0])
+    im = Image.new("RGBA", (IMAGE_SIZE[0] * ffz['multiplier'], IMAGE_SIZE[1] * ffz['multiplier']), BG_COLOURS[0])
     draw = ImageDraw.Draw(im)
     draw.rectangle([im.size[0]//2, 0, im.size[0], im.size[1]], fill=BG_COLOURS[1])
     del draw
