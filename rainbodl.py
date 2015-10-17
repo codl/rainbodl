@@ -128,7 +128,7 @@ def post_image(api):
         media = api.media_upload(filename);
         api.update_status(media_ids=[media.media_id,], status=conf["message"]);
     except tweepy.TweepError as e:
-        print(e.with_traceback)
+        print(e.with_traceback())
         exit(1)
 
 def post_status(api):
