@@ -42,9 +42,17 @@ def make_pic(ffz):
     req = requests.get(ffz["url"], headers=HEADERS);
     emote = Image.open(BytesIO(req.content))
 
+    if emote.mode != "RGBA":
+        emote.convert("RGBA")
+
     # paste it on
-    im.paste(emote, ( im.size[0]//4 - emote.size[0]//2, im.size[1]//2 - emote.size[1]//2 ), emote)
-    im.paste(emote, ( 3 * im.size[0]//4 - emote.size[0]//2, im.size[1]//2 - emote.size[1]//2 ), emote)
+    try:
+        im.paste(emote, ( im.size[0]//4 - emote.size[0]//2, im.size[1]//2 - emote.size[1]//2 ), emote)
+        im.paste(emote, ( 3 * im.size[0]//4 - emote.size[0]//2, im.size[1]//2 - emote.size[1]//2 ), emote)
+    except ValueError as e:
+        print("fucked up if true!!!")
+        print(ffz)
+        raise e
 
     return im
 
@@ -66,7 +74,7 @@ def tweet(api):
         media = api.media_upload(filename);
         api.update_status(media_ids=[media.media_id,], status="{} {}".format(name, url));
     except tweepy.TweepError as e:
-        print(e.with_traceback)
+        print(e.with_traceback())
         exit(1)
 
     f.close()
