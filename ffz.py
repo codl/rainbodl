@@ -43,7 +43,7 @@ def make_pic(ffz):
     emote = Image.open(BytesIO(req.content))
 
     if emote.mode != "RGBA":
-        emote.convert("RGBA")
+        emote = emote.convert("RGBA")
 
     # paste it on
     try:
