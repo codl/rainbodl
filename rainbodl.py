@@ -141,8 +141,8 @@ def post_status(api):
     with open(conf['path'], 'r') as f:
         statuses = f.read().split(conf['separator'])
 
-    if statuses[-1] == "":
-        statuses.pop()
+    # filter out any empty lines
+    statuses = [status for status in statuses if status != ""]
 
     status = random.choice(statuses)
 
