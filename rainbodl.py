@@ -178,3 +178,7 @@ if __name__ == "__main__":
         post_status(api)
     if args.command == 'post-ffz':
         ffz.tweet(api)
+    if args.command == 'auth':
+        u = api.verify_credentials()
+        if u:
+            print("Successfully authed as @%s (%s)" % (u.screen_name, u.id_str))
