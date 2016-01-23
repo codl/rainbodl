@@ -148,6 +148,7 @@ def post_status(api):
 
     if status[0] == '|':
         try:
+            os.chdir(os.path.dirname(conf['path']))
             media = api.media_upload(status[1:]);
             api.update_status(media_ids=[media.media_id,]);
         except tweepy.TweepError as e:
