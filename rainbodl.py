@@ -135,7 +135,7 @@ def post_status(api):
     try:
         conf = expect_conf("post_status", {"path": None, "separator": "\n"})
     except ConfNotValid:
-        print("Please fill in the location of the image directory in %s" % (conf_file,), file=sys.stderr)
+        print("Please fill in the location of the tweet list in %s" % (conf_file,), file=sys.stderr)
         exit(1)
 
     with open(conf['path'], 'r') as f:
