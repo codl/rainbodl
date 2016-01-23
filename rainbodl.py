@@ -141,6 +141,9 @@ def post_status(api):
     with open(conf['path'], 'r') as f:
         statuses = f.read().split(conf['separator'])
 
+    if statuses[-1] == "":
+        statuses.pop()
+
     status = random.choice(statuses)
 
     if status[0] == '|':
