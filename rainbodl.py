@@ -143,7 +143,15 @@ def post_status(api):
 
     status = random.choice(statuses)
 
-    api.update_status(status=status)
+    if status[0] == '|':
+        try:
+            media = api.media_upload(status[1:]);
+            api.update_status(media_ids=[media.media_id,]);
+        except tweepy.TweepError as e:
+            print(e.with_traceback())
+            exit(1)
+    else:
+        api.update_status(status=status)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
