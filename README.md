@@ -8,7 +8,7 @@ if you must use this, here's how:
 
 Make sure you have python and pip installed.
 
-Register an app with twitter at https://apps.twitter.com/ and take note of the consumer key and consumer secret values.
+Register an app with twitter at <https://apps.twitter.com/>, give it at least write access permissions, and take note of the consumer key and consumer secret values.
 
 ```
 pip install -r requirements.txt
