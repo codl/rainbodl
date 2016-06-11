@@ -162,9 +162,18 @@ def post_status(api):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.set_defaults(command='help')
     parser.add_argument('-c', '--config', help="set the config file path", default="~/.rainbodl")
-    parser.add_argument('command', choices={'auth', 'rainbodl', 'post-image', 'post-status', 'post-ffz', 'set-avatar'})
-    parser.add_argument('--file', required=False)
+    command = parser.add_subparsers(help='command to run', dest='command')
+    command.add_parser('auth', help='test twitter credentials')
+    command.add_parser('rainbodl',
+        help='set avatar to specified image or random image from specified directory, overlaid on a random solid color')
+    command.add_parser('post-image', help='post a random image from directory')
+    command.add_parser('post-status', help='post a random status from file')
+    command.add_parser('post-ffz', help='post an ffz, see @ffz_png')
+    parser_set_avatar = command.add_parser('set-avatar',
+        help='set avatar to file passed on the command line')
+    parser_set_avatar.add_argument('file')
     args = parser.parse_args()
 
     global conf_file
@@ -180,15 +189,18 @@ if __name__ == "__main__":
 
     if args.command == 'rainbodl':
         rainbodl(api)
-    if args.command == 'post-image':
+    elif args.command == 'post-image':
         post_image(api)
-    if args.command == 'post-status':
+    elif args.command == 'post-status':
         post_status(api)
-    if args.command == 'post-ffz':
+    elif args.command == 'post-ffz':
         ffz.tweet(api)
-    if args.command == 'set-avatar':
+    elif args.command == 'set-avatar':
         set_avatar(api, args.file)
-    if args.command == 'auth':
+    elif args.command == 'auth':
         u = api.verify_credentials()
         if u:
             print("Successfully authed as @%s (%s)" % (u.screen_name, u.id_str))
+
+    else:
+        parser.print_help()
