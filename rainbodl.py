@@ -107,12 +107,15 @@ def rainbodl(api):
 
     final.save(filename)
 
-    api.update_profile_image(filename)
+    set_avatar(api, filename)
 
     if conf['change_profile_color']:
         api.update_profile(profile_link_color=rgb_tuple_to_hex(linkcolor))
 
     os.unlink(filename)
+
+def set_avatar(api, filename):
+    api.update_profile_image(filename)
 
 def post_image(api):
     try:
@@ -160,7 +163,8 @@ def post_status(api):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', help="set the config file path", default="~/.rainbodl")
-    parser.add_argument('command', choices={'auth', 'rainbodl', 'post-image', 'post-status', 'post-ffz'})
+    parser.add_argument('command', choices={'auth', 'rainbodl', 'post-image', 'post-status', 'post-ffz', 'set-avatar'})
+    parser.add_argument('--file', required=False)
     args = parser.parse_args()
 
     global conf_file
@@ -182,6 +186,8 @@ if __name__ == "__main__":
         post_status(api)
     if args.command == 'post-ffz':
         ffz.tweet(api)
+    if args.command == 'set-avatar':
+        set_avatar(api, args.file)
     if args.command == 'auth':
         u = api.verify_credentials()
         if u:
